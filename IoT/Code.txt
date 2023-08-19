@@ -1,0 +1,81 @@
+Import time
+import random
+
+from gpiozero import LED, SoundSensor, TemperatureSensor, LightSensor, Relay, Button, UltrasonicSensor, RotaryEncoder
+from lcd.gpio import LCD
+
+# Initialize the sensors
+red_led = LED(17)
+blue_led = LED(22)
+green_led = LED(27)
+sound_sensor = SoundSensor(4)
+temperature_sensor = TemperatureSensor(18)
+light_sensor = LightSensor(23)
+relay = Relay(24)
+button = Button(16)
+ultrasonic_sensor = UltrasonicSensor(20, 21)
+rotary_encoder = RotaryEncoder(12, 13)
+
+# Initialize the LCD display
+lcd = LCD(2, 16, 1)
+
+# Set the default weather conditions
+current_weather = "Sunny"
+
+# The main loop
+while True:
+# Read the sensor data
+    sound_level = sound_sensor.value
+    temperature = temperature_sensor.temperature
+    light_level = light_sensor.value
+    distance = ultrasonic_sensor.distance
+    rotary_position = rotary_encoder.position
+
+# Update the weather conditions based on the sensor data
+    if sound_level > 70:
+        current_weather = "Rainy"
+    elif temperature < 10:
+        current_weather = "Snowy"
+    elif light_level < 20:
+        current_weather = "Cloudy"
+    elif distance < 10:
+        current_weather = "Fog"
+    else:
+        current_weather = "Sunny"
+
+# Update the LEDs and buzzer based on the weather conditions
+    if current_weather == "Sunny":
+        red_led.off()
+        blue_led.off()
+        green_led.on()
+        buzzer.off()
+    elif current_weather == "Rainy":
+        red_led.on()
+        blue_led.off()
+        green_led.off()
+        buzzer.on()
+    elif current_weather == "Snowy":
+        red_led.off()
+        blue_led.on()
+        green_led.off()
+        buzzer.on()
+    elif current_weather == "Cloudy":
+        red_led.off()
+        blue_led.off()
+        green_led.on()
+        buzzer.off()
+    else:
+        red_led.on()
+        blue_led.on()
+        green_led.on()
+        buzzer.on()
+
+# Update the LCD display with the current weather conditions
+    lcd.clear()
+    lcd.write(current_weather)
+
+# Wait for a button press
+    if button.is_pressed:
+        break
+# Sleep for a second
+    time.sleep(1)
